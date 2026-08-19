@@ -44,6 +44,10 @@ const ENFORCEMENT: Record<string, { note: string; where: 'both' | 'client' | 'se
   'features.invite': { note: 'Refused by Synapse; the button is also hidden.', where: 'both' },
   'features.userSearch': { note: 'Directory disabled server-side and blocked at the proxy.', where: 'both' },
   'features.directMessage': { note: 'Client-side only today.', where: 'client' },
+  'features.pressBotButtons': {
+    note: "Draws bot buttons as pressable. The press itself is refused by the bridge unless that bot is in pressable_bot_ids — turning this on does not make any button work.",
+    where: 'client',
+  },
   'features.bridgeCommands': { note: 'Bridge permissions refuse agents outright.', where: 'server' },
   'media.allowImageDownload': { note: 'Browser only — the file is already delivered.', where: 'client' },
   'media.allowFileDownload': { note: 'Browser only — the file is already delivered.', where: 'client' },
