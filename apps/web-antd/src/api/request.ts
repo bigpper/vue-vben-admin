@@ -72,6 +72,21 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
   });
 
   // 处理返回的响应数据格式
+  //
+  // COMPANY CHANGE. Upstream expects every response to be wrapped in Vben's
+  // envelope, `{ code: 0, data: <payload> }`, and `defaultResponseInterceptor`
+  // THROWS the whole response when `code` is missing (preset-interceptors.ts:42).
+  //
+  // The management API does not use an envelope: it returns the payload directly
+  // and reports failure with the HTTP status, which is also the contract the
+  // Element policy module consumes. Under upstream settings a perfectly successful
+  // 201 `{ accessToken: ... }` was thrown as an error, so login appeared to fail
+  // while the server log showed it succeeding — and every other admin call failed
+  // the same silent way.
+  //
+  // `responseReturn: 'body'` (below, on createRequestClient) makes the interceptor
+  // return the parsed body untouched. The envelope config is left here, unused, so
+  // an upstream merge still applies cleanly.
   client.addResponseInterceptor(
     defaultResponseInterceptor({
       codeField: 'code',
@@ -107,7 +122,9 @@ function createRequestClient(baseURL: string, options?: RequestClientOptions) {
 }
 
 export const requestClient = createRequestClient(apiURL, {
-  responseReturn: 'data',
+  // 'data' unwraps Vben's envelope; 'body' returns the response body as-is.
+  // See the COMPANY CHANGE note on the response interceptor above.
+  responseReturn: 'body',
 });
 
 export const baseRequestClient = new RequestClient({ baseURL: apiURL });
