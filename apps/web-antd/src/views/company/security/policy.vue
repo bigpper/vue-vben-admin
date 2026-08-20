@@ -109,34 +109,34 @@ function setValue(path: string, value: any) {
 onMounted(load);
 
 const columns = [
-  { title: 'Section', dataIndex: 'section', width: 110 },
-  { title: 'Setting', dataIndex: 'name', width: 230 },
-  { title: 'Value', key: 'value', width: 220 },
-  { title: 'Enforced where', key: 'enforcement' },
+  { title: '分组', dataIndex: 'section', width: 110 },
+  { title: '设置项', dataIndex: 'name', width: 230 },
+  { title: '取值', key: 'value', width: 220 },
+  { title: '强制点', key: 'enforcement' },
 ];
 </script>
 
 <template>
   <Page
-    title="Security policy"
-    description="Versioned. Publishing creates a new version; the previous one is retained."
+    title="安全策略"
+    description="策略带版本。发布会生成新版本，旧版本保留可查。"
   >
     <Alert
       class="mb-4"
       type="info"
       show-icon
-      message="Not every switch is a boundary"
-      description="Controls marked 'client' are honoured by the agent's browser only. They deter and they produce an audit trail, but an agent who controls their machine can defeat them. Controls marked 'server' are refused by Synapse or the bridge regardless of what the client does."
+      message="不是每个开关都是边界"
+      description="标记为「客户端」的控制只由坐席的浏览器执行：它们起威慑作用并留下审计记录，但能控制自己机器的坐席可以绕过。标记为「服务端」的控制由 Synapse 或桥拒绝，与客户端行为无关。"
     />
 
     <Card :loading="loading">
       <template #title>
-        Active policy
+        当前策略
         <Tag v-if="version" color="blue">v{{ version }}</Tag>
       </template>
       <template #extra>
         <Button type="primary" :loading="publishing" @click="save">
-          Publish new version
+          发布新版本
         </Button>
       </template>
 

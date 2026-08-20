@@ -86,24 +86,24 @@ function reset() {
 onMounted(load);
 
 const columns = [
-  { title: 'Time', dataIndex: 'createdAt', width: 180 },
-  { title: 'Event', dataIndex: 'eventType', width: 210 },
-  { title: 'Agent', dataIndex: 'agentCode', width: 110 },
-  { title: 'Role', dataIndex: 'roleId', width: 150 },
-  { title: 'Result', key: 'result', width: 110 },
-  { title: 'Conversation', dataIndex: 'conversationId', ellipsis: true },
+  { title: '时间', dataIndex: 'createdAt', width: 180 },
+  { title: '事件', dataIndex: 'eventType', width: 210 },
+  { title: '坐席', dataIndex: 'agentCode', width: 110 },
+  { title: '角色', dataIndex: 'roleId', width: 150 },
+  { title: '结果', key: 'result', width: 110 },
+  { title: '会话', dataIndex: 'conversationId', ellipsis: true },
   { title: 'IP', dataIndex: 'ipAddress', width: 130 },
 ];
 </script>
 
 <template>
-  <Page title="Security events" description="Identifiers and metadata only.">
+  <Page title="安全事件" description="只记录标识与元数据。">
     <Alert
       class="mb-4"
       type="info"
       show-icon
-      message="No message content is recorded"
-      description="Audit rows reference a conversation and a message by ID. The text an agent copied is never stored — recording it would recreate the exposure the copy policy exists to limit."
+      message="不记录任何消息内容"
+      description="审计记录只通过 ID 引用会话和消息。坐席复制的文本从不存储——记录它等于重新制造了复制策略本来要限制的那份暴露。"
     />
 
     <Card>
@@ -139,9 +139,9 @@ const columns = [
           style="width: 240px"
           allow-clear
         />
-        <Button type="primary" @click="load">Search</Button>
-        <Button @click="reset">Reset</Button>
-        <Button v-if="canExport" @click="doExport">Export CSV</Button>
+        <Button type="primary" @click="load">搜索</Button>
+        <Button @click="reset">重置</Button>
+        <Button v-if="canExport" @click="doExport">导出 CSV</Button>
       </div>
 
       <Table

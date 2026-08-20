@@ -205,3 +205,26 @@ export async function telegramStatus() {
     schema: { detail?: string; ok: boolean };
   }>('/api/admin/telegram/status');
 }
+
+export interface RoomWidgetConfig {
+  label: null | string;
+  roomId: string;
+  targetUrl: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export async function listRoomWidgets() {
+  return requestClient.get<{ configs: RoomWidgetConfig[] }>(
+    '/api/admin/room-widgets',
+  );
+}
+
+/** targetUrl: null clears the configuration for that room. */
+export async function setRoomWidget(data: {
+  label?: string;
+  roomId: string;
+  targetUrl: null | string;
+}) {
+  return requestClient.post<{ ok: boolean }>('/api/admin/room-widgets', data);
+}

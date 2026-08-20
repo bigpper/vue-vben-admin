@@ -114,36 +114,36 @@ async function confirmReveal() {
 onMounted(load);
 
 const columns = [
-  { title: 'Internal ID', dataIndex: 'internalCustomerId', width: 190 },
-  { title: 'Display alias', dataIndex: 'displayAlias', width: 220 },
-  { title: 'Bridge token', dataIndex: 'bridgeToken', ellipsis: true },
+  { title: '内部编号', dataIndex: 'internalCustomerId', width: 190 },
+  { title: '显示名称', dataIndex: 'displayAlias', width: 220 },
+  { title: '桥令牌', dataIndex: 'bridgeToken', ellipsis: true },
   { title: '', key: 'actions', width: 130 },
 ];
 </script>
 
 <template>
   <Page
-    title="Customer identity"
-    description="Internal identifiers. Telegram identity is revealed only on an audited request."
+    title="客户身份"
+    description="仅内部标识。真实 Telegram 身份只能通过留痕的申请才能查看。"
   >
     <Alert
       class="mb-4"
       type="warning"
       show-icon
-      message="Revealing an identity is recorded"
-      description="Every reveal writes an audit record with your account, the customer, the reason you give, and the time. The reason is required by the API, not just by this form."
+      message="每次查看身份都会被记录"
+      description="每次查看都会写入审计记录，包含你的账号、客户、你填写的理由和时间。理由是接口强制要求的，不只是这个表单的校验。"
     />
 
     <Card>
       <div class="mb-4 flex gap-2">
         <Input
           v-model:value="search"
-          placeholder="Search alias or internal ID"
+          placeholder="搜索名称或内部编号"
           style="width: 280px"
           allow-clear
           @press-enter="load"
         />
-        <Button type="primary" @click="load">Search</Button>
+        <Button type="primary" @click="load">搜索</Button>
         <Button :loading="reconciling" class="ml-auto" @click="reconcile">
           Reconcile with bridge
         </Button>
@@ -164,9 +164,9 @@ const columns = [
               size="small"
               @click="openReveal(record)"
             >
-              Reveal
+              查看真实身份
             </Button>
-            <Tag v-else color="default">No access</Tag>
+            <Tag v-else color="default">无权限</Tag>
           </template>
         </template>
       </Table>
@@ -174,7 +174,7 @@ const columns = [
 
     <Modal
       v-model:open="revealOpen"
-      title="Reveal Telegram identity"
+      title="查看 Telegram 真实身份"
       :confirm-loading="revealing"
       :ok-text="revealed ? 'Close' : 'Reveal'"
       @ok="revealed ? (revealOpen = false) : confirmReveal()"
@@ -186,7 +186,7 @@ const columns = [
         <p class="text-muted-foreground mb-2 text-sm">
           State why this is necessary. It is stored in the audit trail.
         </p>
-        <Textarea v-model:value="reason" :rows="3" placeholder="Reason" />
+        <Textarea v-model:value="reason" :rows="3" placeholder="填写理由" />
       </template>
       <template v-else>
         <Alert

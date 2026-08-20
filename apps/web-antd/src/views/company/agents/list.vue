@@ -101,7 +101,7 @@ async function save() {
       mxid: form.value.mxid,
       roleId: form.value.roleId,
     });
-    message.success('Provisioned');
+    message.success('已开通');
     editOpen.value = false;
     await load();
   } catch (error: any) {
@@ -123,17 +123,17 @@ async function toggle(row: AgentRow) {
 onMounted(load);
 
 const columns = [
-  { title: 'Agent code', dataIndex: 'agentCode', width: 150 },
-  { title: 'Name', dataIndex: 'displayName', width: 190 },
+  { title: '工号', dataIndex: 'agentCode', width: 150 },
+  { title: '姓名', dataIndex: 'displayName', width: 190 },
   { title: 'Matrix ID', dataIndex: 'mxid', ellipsis: true },
-  { title: 'Role', dataIndex: 'roleId', width: 170 },
-  { title: 'Status', key: 'status', width: 110 },
+  { title: '角色', dataIndex: 'roleId', width: 170 },
+  { title: '状态', key: 'status', width: 110 },
   { title: '', key: 'actions', width: 170 },
 ];
 </script>
 
 <template>
-  <Page title="Agents" description="Provisioning, roles and access.">
+  <Page title="坐席" description="开通、角色与访问权限。">
     <Alert
       v-if="pendingCount > 0"
       class="mb-4"
@@ -145,10 +145,10 @@ const columns = [
 
     <Card :loading="loading">
       <Tabs v-model:activeKey="tab">
-        <TabPane key="active" tab="Provisioned" />
+        <TabPane key="active" tab="已开通" />
         <TabPane key="pending">
           <template #tab>
-            Pending
+            待处理
             <Badge v-if="pendingCount" :count="pendingCount" class="ml-1" />
           </template>
         </TabPane>
@@ -182,7 +182,7 @@ const columns = [
                 {{ record.active ? 'Deactivate' : 'Activate' }}
               </Button>
             </template>
-            <Tag v-else color="default">Read only</Tag>
+            <Tag v-else color="default">只读</Tag>
           </template>
         </template>
       </Table>
@@ -190,7 +190,7 @@ const columns = [
 
     <Modal
       v-model:open="editOpen"
-      title="Provision agent"
+      title="开通坐席"
       :confirm-loading="saving"
       @ok="save"
     >

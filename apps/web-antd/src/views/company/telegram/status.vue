@@ -43,7 +43,7 @@ onMounted(load);
 </script>
 
 <template>
-  <Page title="Telegram" description="Bridge connection and bridged chats.">
+  <Page title="Telegram" description="桥的连接状态与已桥接的会话。">
     <Alert
       v-if="data && !data.schema.ok"
       class="mb-4"
@@ -64,30 +64,30 @@ onMounted(load);
     <Row :gutter="16" class="mb-4">
       <Col :span="6">
         <Card :loading="loading">
-          <Statistic title="Bridged conversations" :value="data?.portals.total ?? 0" />
+          <Statistic title="已桥接会话" :value="data?.portals.total ?? 0" />
         </Card>
       </Col>
       <Col :span="6">
         <Card :loading="loading">
-          <Statistic title="Service groups" :value="data?.portals.group ?? 0" />
+          <Statistic title="服务群组" :value="data?.portals.group ?? 0" />
         </Card>
       </Col>
       <Col :span="6">
         <Card :loading="loading">
-          <Statistic title="Direct chats" :value="data?.portals.dm ?? 0" />
+          <Statistic title="私聊" :value="data?.portals.dm ?? 0" />
         </Card>
       </Col>
       <Col :span="6">
         <Card :loading="loading">
-          <Statistic title="Bridged identities" :value="data?.bridgedIdentities ?? 0" />
+          <Statistic title="已桥接身份" :value="data?.bridgedIdentities ?? 0" />
         </Card>
       </Col>
     </Row>
 
     <Card :loading="loading">
-      <template #title>Connection</template>
+      <template #title>连接</template>
       <template #extra>
-        <Button size="small" @click="load">Refresh</Button>
+        <Button size="small" @click="load">刷新</Button>
       </template>
 
       <Descriptions bordered size="small" :column="1">
@@ -113,8 +113,8 @@ onMounted(load);
         class="mt-4"
         type="info"
         show-icon
-        message="Why there is no 'restart bridge' button here"
-        description="The bridge is not reachable from this service by design (brief §25, ADR-0005) — that isolation is what stops an agent asking it to reverse the identity mapping. Bridge operations are performed from the bridge administration room by an integration administrator."
+        message="这里为什么没有「重启桥」按钮"
+        description="按设计，这个服务无法访问桥（§25、ADR-0005）——正是这层隔离，使得坐席无法请求桥反查身份映射。桥的运维操作由集成管理员在桥管理房间中执行。"
       />
     </Card>
   </Page>

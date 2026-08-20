@@ -114,25 +114,25 @@ async function setStatus(row: ConversationRow, status: string) {
 onMounted(load);
 
 const columns = [
-  { title: 'Conversation', dataIndex: 'name', ellipsis: true },
-  { title: 'Type', key: 'type', width: 100 },
-  { title: 'Customer', dataIndex: 'customerAlias', width: 180 },
-  { title: 'Assigned to', key: 'assigned', width: 280 },
-  { title: 'Status', key: 'status', width: 130 },
+  { title: '会话', dataIndex: 'name', ellipsis: true },
+  { title: '类型', key: 'type', width: 100 },
+  { title: '客户', dataIndex: 'customerAlias', width: 180 },
+  { title: '分配给', key: 'assigned', width: 280 },
+  { title: '状态', key: 'status', width: 130 },
 ];
 </script>
 
 <template>
   <Page
-    title="Conversations"
-    description="One Telegram service group per customer, bridged to one room."
+    title="会话"
+    description="每个客户一个 Telegram 服务群，桥接为一个房间。"
   >
     <Alert
       class="mb-4"
       type="info"
       show-icon
-      message="No message content here"
-      description="This screen reads a read-only view of the bridge limited to room metadata. The bridge's message table is not granted to it at all, so conversation content cannot be shown from the admin console even by mistake."
+      message="此处不含任何消息内容"
+      description="本页读取的是桥数据库的只读视图，且仅限房间元数据。桥的消息表根本没有授权给这个服务，因此管理后台即使出错也无法显示会话内容。"
     />
 
     <Card :loading="loading">
@@ -150,7 +150,7 @@ const columns = [
           style="width: 280px"
           allow-clear
         />
-        <Button @click="load">Refresh</Button>
+        <Button @click="load">刷新</Button>
       </div>
 
       <Table

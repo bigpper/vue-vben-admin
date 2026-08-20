@@ -33,26 +33,26 @@ async function load() {
 onMounted(load);
 
 const columns = [
-  { title: 'Component', dataIndex: 'name', width: 220 },
-  { title: 'Status', key: 'status', width: 130 },
-  { title: 'Detail', dataIndex: 'detail' },
+  { title: '组件', dataIndex: 'name', width: 220 },
+  { title: '状态', key: 'status', width: 130 },
+  { title: '说明', dataIndex: 'detail' },
 ];
 </script>
 
 <template>
-  <Page title="System health" description="Observed, not assumed.">
+  <Page title="运行状态" description="实测所得，而非假定。">
     <Alert
       class="mb-4"
       type="info"
       show-icon
-      message="Some components are intentionally not observable from here"
-      description="The Telegram bridge sits on an isolated network with no route from this service — that isolation is a security control, not a gap. It is reported as unknown rather than guessed at."
+      message="部分组件按设计无法从这里观测"
+      description="Telegram 桥位于隔离网络，本服务没有到它的路由——这层隔离是安全控制，不是缺口。因此它显示为「未知」，而不是猜一个状态。"
     />
     <Card :loading="loading">
-      <template #title>Components</template>
+      <template #title>组件</template>
       <template #extra>
         <span class="text-muted-foreground mr-3 text-xs">{{ checkedAt }}</span>
-        <Button size="small" @click="load">Refresh</Button>
+        <Button size="small" @click="load">刷新</Button>
       </template>
       <Table
         :columns="columns"
