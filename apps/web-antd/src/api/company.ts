@@ -235,3 +235,26 @@ export async function setRoomWidget(data: {
 }) {
   return requestClient.post<{ ok: boolean }>('/api/admin/room-widgets', data);
 }
+
+export interface OverviewData {
+  agents: { active: number; total: number };
+  audit: { blocked24h: number; last24h: number };
+  conversations: {
+    assigned: number;
+    direct: number;
+    groups: number;
+    total: number;
+    unassigned: number;
+  };
+  customers: { registered: number };
+  policy: null | { createdAt: string; version: number };
+  telegram: {
+    accounts: { id: string; name: null | string }[];
+    bridgedIdentities: number;
+  };
+  widgets: { configured: number };
+}
+
+export async function getOverview() {
+  return requestClient.get<OverviewData>('/api/admin/overview');
+}
