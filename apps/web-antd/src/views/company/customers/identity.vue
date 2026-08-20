@@ -117,7 +117,7 @@ const columns = [
   { title: '内部编号', dataIndex: 'internalCustomerId', width: 190 },
   { title: '显示名称', dataIndex: 'displayAlias', width: 220 },
   { title: '桥令牌', dataIndex: 'bridgeToken', ellipsis: true },
-  { title: '', key: 'actions', width: 130 },
+  { title: '', key: 'actions', fixed: 'right', width: 130 },
 ];
 </script>
 
@@ -150,6 +150,7 @@ const columns = [
       </div>
 
       <Table
+        :scroll="{ x: 900 }"
         :columns="columns"
         :data-source="rows"
         :loading="loading"

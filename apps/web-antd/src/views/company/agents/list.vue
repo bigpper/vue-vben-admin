@@ -34,6 +34,7 @@ import {
 } from 'ant-design-vue';
 
 import {
+  getOverview,
   listAgents,
   listRoles,
   setAgentActive,
@@ -54,7 +55,16 @@ const roles = ref<RoleRow[]>([]);
 
 const editOpen = ref(false);
 const saving = ref(false);
-const form = ref({ agentCode: '', displayName: '', mxid: '', roleId: 'AGENT' });
+const form = ref({
+  agentCode: '',
+  displayName: '',
+  mxid: '',
+  roleId: 'AGENT',
+  telegramAccounts: [] as string[],
+});
+
+/** Telegram accounts available to bind, from the overview endpoint. */
+const accountOptions = ref<{ label: string; value: string }[]>([]);
 
 const roleOptions = computed(() =>
   roles.value.map((r) => ({ label: `${r.name} (${r.rank})`, value: r.id })),
@@ -63,6 +73,19 @@ const roleOptions = computed(() =>
 async function load() {
   loading.value = true;
   try {
+    // Accounts come from the overview endpoint rather than a dedicated one; it
+    // already lists every login and this page needs nothing else from it.
+    getOverview()
+      .then((o) => {
+        accountOptions.value = o.telegram.accounts.map((a) => ({
+          label: a.name || a.id,
+          value: a.id,
+        }));
+      })
+      .catch(() => {
+        // A missing account list must not stop the page loading — the binding
+        // control simply has no options, which is visible and recoverable.
+      });
     const [a, p, r] = await Promise.all([
       listAgents(false),
       listAgents(true),
@@ -84,18 +107,20 @@ function openApprove(row: AgentRow) {
     displayName: row.displayName ?? localpart,
     mxid: row.mxid,
     roleId: row.roleId || 'AGENT',
+    telegramAccounts: row.telegramAccounts ?? [],
   };
   editOpen.value = true;
 }
 
 async function save() {
   if (!form.value.agentCode.trim()) {
-    message.warning('An agent code is required — it appears in audit records and the watermark.');
+    message.warning('必须填写工号——它会出现在审计记录和水印中。');
     return;
   }
   saving.value = true;
   try {
     await upsertAgent({
+      telegramAccounts: form.value.telegramAccounts,
       agentCode: form.value.agentCode.trim(),
       displayName: form.value.displayName.trim() || undefined,
       mxid: form.value.mxid,
@@ -127,8 +152,9 @@ const columns = [
   { title: '姓名', dataIndex: 'displayName', width: 190 },
   { title: 'Matrix ID', dataIndex: 'mxid', ellipsis: true },
   { title: '角色', dataIndex: 'roleId', width: 170 },
+  { title: 'Telegram 账号', key: 'accounts', width: 160 },
   { title: '状态', key: 'status', width: 110 },
-  { title: '', key: 'actions', width: 170 },
+  { title: '', key: 'actions', fixed: 'right', width: 170 },
 ];
 </script>
 
@@ -155,6 +181,7 @@ const columns = [
       </Tabs>
 
       <Table
+        :scroll="{ x: 1180 }"
         :columns="columns"
         :data-source="tab === 'pending' ? pending : agents"
         :pagination="false"
@@ -164,13 +191,21 @@ const columns = [
         <template #bodyCell="{ column, record }">
           <template v-if="column.key === 'status'">
             <Tag :color="record.active ? 'green' : 'default'">
-              {{ record.active ? 'active' : 'inactive' }}
+              {{ record.active ? '已启用' : '已停用' }}
             </Tag>
+          </template>
+          <template v-if="column.key === 'accounts'">
+            <template v-if="record.telegramAccounts?.length">
+              <Tag v-for="a in record.telegramAccounts" :key="a" color="blue">
+                {{ accountOptions.find((o) => o.value === a)?.label ?? a }}
+              </Tag>
+            </template>
+            <span v-else class="text-muted-foreground text-xs">不限制</span>
           </template>
           <template v-if="column.key === 'actions'">
             <template v-if="canWrite">
               <Button size="small" type="link" @click="openApprove(record)">
-                {{ tab === 'pending' ? 'Provision' : 'Edit' }}
+                {{ tab === 'pending' ? '开通' : '编辑' }}
               </Button>
               <Button
                 v-if="tab !== 'pending'"
@@ -179,7 +214,7 @@ const columns = [
                 :danger="record.active"
                 @click="toggle(record)"
               >
-                {{ record.active ? 'Deactivate' : 'Activate' }}
+                {{ record.active ? '停用' : '启用' }}
               </Button>
             </template>
             <Tag v-else color="default">只读</Tag>
@@ -190,7 +225,7 @@ const columns = [
 
     <Modal
       v-model:open="editOpen"
-      title="开通坐席"
+      :title="tab === 'pending' ? '开通坐席' : '编辑坐席'"
       :confirm-loading="saving"
       @ok="save"
     >
@@ -198,20 +233,34 @@ const columns = [
         <FormItem label="Matrix ID">
           <Input :value="form.mxid" disabled />
         </FormItem>
-        <FormItem label="Agent code">
+        <FormItem label="工号">
           <Input
             v-model:value="form.agentCode"
             placeholder="CS002"
           />
           <span class="text-muted-foreground text-xs">
-            Appears in audit records and in the on-screen watermark.
+            显示在审计记录和屏幕水印中。
           </span>
         </FormItem>
-        <FormItem label="Display name">
+        <FormItem label="姓名">
           <Input v-model:value="form.displayName" />
         </FormItem>
-        <FormItem label="Role">
+        <FormItem label="角色">
           <Select v-model:value="form.roleId" :options="roleOptions" />
+        </FormItem>
+        <FormItem label="可分配的 Telegram 账号">
+          <Select
+            v-model:value="form.telegramAccounts"
+            mode="multiple"
+            :options="accountOptions"
+            placeholder="留空 = 不限制"
+            allow-clear
+          />
+          <span class="text-muted-foreground text-xs">
+            限制这个坐席可以被分配哪些账号下的会话。留空表示不限制。<br />
+            这是分配层面的约束，不是访问控制——真正决定坐席能读什么的是房间成员关系，
+            清除绑定不会把任何人移出房间。
+          </span>
         </FormItem>
       </Form>
     </Modal>

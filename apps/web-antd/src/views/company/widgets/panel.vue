@@ -147,7 +147,7 @@ const columns = [
   { title: '会话', dataIndex: 'name', width: 220, ellipsis: true },
   { title: '类型', key: 'type', width: 80 },
   { title: '客户页面', key: 'target' },
-  { title: '', key: 'actions', width: 150 },
+  { title: '', key: 'actions', fixed: 'right', width: 150 },
 ];
 </script>
 
@@ -179,6 +179,7 @@ const columns = [
       </div>
 
       <Table
+        :scroll="{ x: 1000 }"
         :columns="columns"
         :data-source="rows"
         :loading="loading"

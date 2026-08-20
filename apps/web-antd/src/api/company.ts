@@ -124,6 +124,8 @@ export async function reconcileCustomers() {
 
 export interface AgentRow {
   active: boolean;
+  /** Telegram login IDs this agent may be assigned from. Empty = unrestricted. */
+  telegramAccounts: null | string[];
   agentCode: string;
   createdAt: string;
   displayName: null | string;
@@ -153,6 +155,8 @@ export async function upsertAgent(data: {
   displayName?: string;
   mxid: string;
   roleId: string;
+  /** Omit to leave the existing binding alone; [] clears it. */
+  telegramAccounts?: string[];
 }) {
   return requestClient.post<{ ok: boolean }>('/api/admin/agents', data);
 }

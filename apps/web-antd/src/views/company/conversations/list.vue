@@ -155,6 +155,7 @@ const columns = [
       </div>
 
       <Table
+        :scroll="{ x: 1200 }"
         :columns="columns"
         :data-source="filtered"
         :pagination="{ pageSize: 20 }"
