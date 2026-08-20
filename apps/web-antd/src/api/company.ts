@@ -172,6 +172,13 @@ export async function systemHealth() {
 }
 
 export interface ConversationRow {
+  /**
+   * Telegram account this conversation belongs to.
+   *
+   * null for group portals: the bridge scopes only direct chats per login
+   * (portal.receiver), because a group is shared by every account that is in it.
+   */
+  account: null | string;
   assignedTo: null | string;
   customerAlias: null | string;
   name: null | string;

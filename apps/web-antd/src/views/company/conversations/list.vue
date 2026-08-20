@@ -116,6 +116,7 @@ onMounted(load);
 const columns = [
   { title: '会话', dataIndex: 'name', ellipsis: true },
   { title: '类型', key: 'type', width: 100 },
+  { title: 'Telegram 账号', key: 'account', width: 150 },
   { title: '客户', dataIndex: 'customerAlias', width: 180 },
   { title: '分配给', key: 'assigned', width: 280 },
   { title: '状态', key: 'status', width: 130 },
@@ -161,6 +162,15 @@ const columns = [
         row-key="roomId"
       >
         <template #bodyCell="{ column, record }">
+          <template v-if="column.key === 'account'">
+            <Tag v-if="record.account" color="blue">{{ record.account }}</Tag>
+            <!--
+              空账号不是缺数据：桥只按登录账号隔离私聊（portal.receiver），
+              群组由所有在其中的账号共享，因此没有单一归属。
+            -->
+            <span v-else class="text-muted-foreground text-xs">群组共享</span>
+          </template>
+
           <template v-if="column.key === 'type'">
             <Tag :color="record.type === 'direct' ? 'blue' : 'purple'">
               {{ record.type }}
