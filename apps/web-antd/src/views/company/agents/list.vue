@@ -54,6 +54,7 @@ const pendingCount = ref(0);
 const roles = ref<RoleRow[]>([]);
 
 const editOpen = ref(false);
+const creating = ref(false);
 const saving = ref(false);
 const form = ref({
   agentCode: '',
@@ -100,7 +101,29 @@ async function load() {
   }
 }
 
+/**
+ * Provision an agent whose Matrix account already exists but who has never signed
+ * in here.
+ *
+ * The normal path is SSO: the IdP creates the account on first login and this
+ * console shows them under 待处理. This is the manual entry for accounts created
+ * some other way — the server checks the account actually exists, because a record
+ * for a mistyped MXID matches nobody while still looking provisioned.
+ */
+function openCreate() {
+  creating.value = true;
+  form.value = {
+    agentCode: '',
+    displayName: '',
+    mxid: '',
+    roleId: 'AGENT',
+    telegramAccounts: [],
+  };
+  editOpen.value = true;
+}
+
 function openApprove(row: AgentRow) {
+  creating.value = false;
   const localpart = row.mxid.slice(1).split(':')[0] ?? '';
   form.value = {
     agentCode: row.agentCode.startsWith('PENDING-') ? '' : row.agentCode,
@@ -113,6 +136,10 @@ function openApprove(row: AgentRow) {
 }
 
 async function save() {
+  if (creating.value && !/^@[^:]+:.+/.test(form.value.mxid.trim())) {
+    message.warning('请填写完整的 Matrix ID，例如 @someone:matrix.company.internal');
+    return;
+  }
   if (!form.value.agentCode.trim()) {
     message.warning('必须填写工号——它会出现在审计记录和水印中。');
     return;
@@ -121,6 +148,7 @@ async function save() {
   try {
     await upsertAgent({
       telegramAccounts: form.value.telegramAccounts,
+      mxid: form.value.mxid.trim(),
       agentCode: form.value.agentCode.trim(),
       displayName: form.value.displayName.trim() || undefined,
       mxid: form.value.mxid,
@@ -170,6 +198,11 @@ const columns = [
     />
 
     <Card :loading="loading">
+      <div class="mb-3 flex">
+        <Button v-if="canWrite" type="primary" @click="openCreate">
+          新增坐席
+        </Button>
+      </div>
       <Tabs v-model:activeKey="tab">
         <TabPane key="active" tab="已开通" />
         <TabPane key="pending">
@@ -225,13 +258,22 @@ const columns = [
 
     <Modal
       v-model:open="editOpen"
-      :title="tab === 'pending' ? '开通坐席' : '编辑坐席'"
+      :title="creating ? '新增坐席' : tab === 'pending' ? '开通坐席' : '编辑坐席'"
       :confirm-loading="saving"
       @ok="save"
     >
       <Form layout="vertical">
         <FormItem label="Matrix ID">
-          <Input :value="form.mxid" disabled />
+          <Input
+            v-if="creating"
+            v-model:value="form.mxid"
+            placeholder="@someone:matrix.company.internal"
+          />
+          <Input v-else :value="form.mxid" disabled />
+          <span v-if="creating" class="text-muted-foreground text-xs">
+            账号必须已存在于本 homeserver。管理后台不能创建 Matrix 账号——
+            账号由身份提供方在首次 SSO 登录时创建。
+          </span>
         </FormItem>
         <FormItem label="工号">
           <Input
