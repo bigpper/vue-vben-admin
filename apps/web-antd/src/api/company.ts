@@ -192,7 +192,11 @@ export interface ConversationRow {
 }
 
 export async function listConversations() {
-  return requestClient.get<{ conversations: ConversationRow[] }>(
+  return requestClient.get<{
+    /** False until the bridge has started once and created its schema. */
+    bridgeReady: boolean;
+    conversations: ConversationRow[];
+  }>(
     '/api/admin/conversations',
   );
 }

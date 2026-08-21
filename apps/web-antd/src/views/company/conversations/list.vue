@@ -44,6 +44,7 @@ const { hasAccessByCodes } = useAccess();
 const canAssign = hasAccessByCodes(['agent:write', 'audit:read']);
 
 const loading = ref(false);
+const bridgeReady = ref(true);
 const rows = ref<ConversationRow[]>([]);
 const agents = ref<AgentRow[]>([]);
 const tab = ref('all');
@@ -80,6 +81,8 @@ async function load() {
   loading.value = true;
   try {
     const [c, a] = await Promise.all([listConversations(), listAgents(false)]);
+    // An empty list means two very different things depending on this flag.
+    bridgeReady.value = c.bridgeReady !== false;
     rows.value = c.conversations;
     agents.value = a.agents;
   } finally {
@@ -128,6 +131,15 @@ const columns = [
     title="会话"
     description="每个客户一个 Telegram 服务群，桥接为一个房间。"
   >
+    <Alert
+      v-if="!bridgeReady"
+      class="mb-4"
+      type="warning"
+      show-icon
+      message="Telegram 桥尚未启动"
+      description="桥要在首次成功连接 Telegram 后才会建立自己的数据表，所以这里的空列表是「还没有桥接任何会话」，不是「查不到数据」。请先在 deployment/.env 中填入 TELEGRAM_API_ID 与 TELEGRAM_API_HASH。"
+    />
+
     <Alert
       class="mb-4"
       type="info"
