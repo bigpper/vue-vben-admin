@@ -1,5 +1,4 @@
 import {
-  appCopyrightPreferences,
   defineOverridesPreferences,
   definePreferencesExtension,
 } from '@vben/preferences';
@@ -21,7 +20,25 @@ export const overridesPreferences = defineOverridesPreferences({
   app: {
     name: import.meta.env.VITE_APP_TITLE,
   },
-  copyright: appCopyrightPreferences,
+  /**
+   * NOT appCopyrightPreferences.
+   *
+   * That default carries Vben's own ICP filing (闽ICP备19024351号) and its company
+   * name and site. Showing another organisation's filing number on your console is
+   * not a cosmetic leftover — in China an ICP number identifies a specific
+   * registrant, and displaying one that is not yours misrepresents who operates the
+   * site.
+   *
+   * ICP is left empty rather than guessed. Fill it in if this deployment is filed.
+   */
+  copyright: {
+    companyName: 'mihapay',
+    companySiteLink: '',
+    date: '2026',
+    enable: true,
+    icp: '',
+    icpLink: '',
+  },
 });
 
 export const preferencesExtension =
