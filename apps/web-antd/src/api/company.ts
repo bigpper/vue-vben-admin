@@ -215,6 +215,22 @@ export async function assignConversation(data: {
 export async function telegramStatus() {
   return requestClient.get<{
     bridgedIdentities: number;
+    /**
+     * Telegram FLOOD_WAIT counters, written by the bridge.
+     *
+     * null means the counters could not be read — an older bridge, or the view not
+     * created yet. That is NOT the same as "no floods have happened", and the page
+     * must not render it as zeroes.
+     */
+    floodWait: null | {
+      everRecorded: boolean;
+      count: number;
+      peerFloodCount: number;
+      maxWaitSeconds: number;
+      totalWaitSeconds: number;
+      firstAt: null | string;
+      lastAt: null | string;
+    };
     logins: { id: string; name: null | string }[];
     portals: { dm: number; group: number; total: number };
     schema: { detail?: string; ok: boolean };
